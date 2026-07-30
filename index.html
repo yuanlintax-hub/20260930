@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>玉兔中秋租稅大冒險</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 遊戲整體外框容器 (基準比例 1920x1080 自適應縮放) -->
+    <div id="app" class="game-wrapper">
+        <!-- 煙火畫布 (完成頁動態效果) -->
+        <canvas id="fireworks-canvas"></canvas>
+        <!-- 彩帶飄落容器 -->
+        <div id="confetti-container" class="confetti-container"></div>
+
+        <!-- 中秋主題星空與夜景背景 -->
+        <div class="sky-background">
+            <div id="stars-container" class="stars-container"></div>
+            <!-- 大滿月 -->
+            <div class="moon-wrapper">
+                <div class="moon-glow"></div>
+                <div class="moon-surface">
+                    <div class="moon-crater crater-1"></div>
+                    <div class="moon-crater crater-2"></div>
+                    <div class="moon-crater crater-3"></div>
+                </div>
+            </div>
+            <!-- 漂浮白雲 -->
+            <div class="cloud cloud-1"></div>
+            <div class="cloud cloud-2"></div>
+            <div class="cloud cloud-3"></div>
+            <!-- 懸掛中秋燈籠 -->
+            <div class="lantern-group">
+                <div class="lantern lantern-left">
+                    <div class="lantern-string"></div>
+                    <div class="lantern-body">福</div>
+                    <div class="lantern-tassel"></div>
+                </div>
+                <div class="lantern lantern-right">
+                    <div class="lantern-string"></div>
+                    <div class="lantern-body">稅</div>
+                    <div class="lantern-tassel"></div>
+                </div>
+            </div>
+            <!-- 遠山與前景草地 -->
+            <div class="mountains"></div>
+            <div class="grassland">
+                <div class="flower flower-1">🌸</div>
+                <div class="flower flower-2">🌼</div>
+                <div class="flower flower-3">🌸</div>
+            </div>
+        </div>
+
+        <!-- 頂部固定狀態欄與月餅收集區 -->
+        <header class="game-header">
+            <div class="header-brand">
+                <span class="moon-icon">🌕</span>
+                <span class="header-title">玉兔中秋租稅大冒險</span>
+            </div>
+
+            <!-- 月餅收集條：□□□□□ -->
+            <div id="mooncake-tracker" class="mooncake-tracker" title="收集5塊月餅完成挑戰">
+                <span class="tracker-label">月餅收集：</span>
+                <div id="mooncake-slots" class="mooncake-slots">
+                    <div class="slot-item empty" data-index="0"><span class="slot-icon">□</span></div>
+                    <div class="slot-item empty" data-index="1"><span class="slot-icon">□</span></div>
+                    <div class="slot-item empty" data-index="2"><span class="slot-icon">□</span></div>
+                    <div class="slot-item empty" data-index="3"><span class="slot-icon">□</span></div>
+                    <div class="slot-item empty" data-index="4"><span class="slot-icon">□</span></div>
+                </div>
+            </div>
+
+            <!-- 頂部控制按鈕 (音效 toggle & 重設按鈕) -->
+            <div class="header-controls">
+                <button id="sound-btn" class="icon-btn" title="切換音效" aria-label="切換音效">🔊</button>
+                <button id="restart-header-btn" class="icon-btn restart-btn" title="重新開始" aria-label="重新開始">🔄 重新開始</button>
+            </div>
+        </header>
+
+        <!-- 主遊戲視圖區 (多頁面切換) -->
+        <main class="game-viewport">
+
+            <!-- 1. 首頁 (Home Screen) -->
+            <section id="screen-home" class="screen active">
+                <div class="card home-card">
+                    <div class="title-badge">中秋宣導特別篇</div>
+                    <h1 class="main-title">🌕 玉兔中秋租稅大冒險 🌕</h1>
+
+                    <!-- 中央 Q 版玉兔動態展示 (依據參考圖片精心創作全身玉兔抱月餅) -->
+                    <div class="hero-character">
+                        <div id="hero-rabbit-container" class="rabbit-container bounce-idle">
+                            <svg class="rabbit-svg" viewBox="0 0 320 320" width="260" height="260" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <!-- 內耳粉紅漸層 -->
+                                    <linearGradient id="earPink" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#FFB6C1"/>
+                                        <stop offset="100%" stop-color="#FFA07A"/>
+                                    </linearGradient>
+
+                                    <!-- 腮紅暈染 -->
+                                    <radialGradient id="blushGrad" cx="50%" cy="50%" r="50%">
+                                        <stop offset="0%" stop-color="#FF99AC" stop-opacity="0.85"/>
+                                        <stop offset="100%" stop-color="#FF99AC" stop-opacity="0"/>
+                                    </radialGradient>
+
+                                    <!-- 月餅烤色金黃漸層 -->
+                                    <radialGradient id="mooncakeBg" cx="40%" cy="40%" r="60%">
+                                        <stop offset="0%" stop-color="#FBBF24"/>
+                                        <stop offset="60%" stop-color="#F59E0B"/>
+                                        <stop offset="100%" stop-color="#D97706"/>
+                                    </radialGradient>
+
+                                    <!-- 月餅雕花立體漸層 -->
+                                    <linearGradient id="embossGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#92400E"/>
+                                        <stop offset="100%" stop-color="#B45309"/>
+                                    </linearGradient>
+
+                                    <!-- 煙霧漸層 -->
+                                    <linearGradient id="steamGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+                                        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.7"/>
+                                        <stop offset="50%" stop-color="#FEF3C7" stop-opacity="0.5"/>
+                                        <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+                                    </linearGradient>
+
+                                    <!-- 地面陰影 -->
+                                    <radialGradient id="groundShadow" cx="50%" cy="50%" r="50%">
+                                        <stop offset="0%" stop-color="#000000" stop-opacity="0.35"/>
+                                        <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+                                    </radialGradient>
+                                </defs>
+
+                                <!-- 1. 地面陰影 -->
+                                <ellipse cx="160" cy="295" rx="110" ry="16" fill="url(#groundShadow)"/>
+
+                                <!-- 2. 茶杯與熱氣 (左下角) -->
+                                <g class="teacup-group">
+                                    <!-- 煙霧 -->
+                                    <path d="M 50,265 C 40,245 65,230 45,205 C 35,190 55,175 48,160" fill="none" stroke="url(#steamGrad)" stroke-width="12" stroke-linecap="round" opacity="0.8"/>
+                                    <!-- 茶杯本體 -->
+                                    <path d="M 32,270 L 38,295 C 39,298 42,300 46,300 L 64,300 C 68,300 71,298 72,295 L 78,270 Z" fill="#8B5A2B" stroke="#5C3A17" stroke-width="2"/>
+                                    <ellipse cx="55" cy="270" rx="23" ry="5" fill="#704214"/>
+                                    <ellipse cx="55" cy="270" rx="20" ry="3.5" fill="#A3E635"/>
+                                </g>
+
+                                <!-- 3. 兔兔圓滾滾尾巴 (左後方) -->
+                                <circle cx="85" cy="255" r="22" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="2.5"/>
+                                <circle cx="88" cy="252" r="18" fill="#FFFDF8"/>
+
+                                <!-- 4. 兔兔身體與屁屁 (後方底座) -->
+                                <path d="M 95,170 C 70,210 75,270 135,280 C 180,285 240,270 230,210 C 225,180 200,160 170,160 Z" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="3"/>
+
+                                <!-- 5. 兔兔長耳朵 -->
+                                <!-- 左耳朵 (向上延伸) -->
+                                <g class="ear-left">
+                                    <path d="M 120,110 C 80,40 60,5 110,10 C 130,10 135,50 135,100 Z" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="3"/>
+                                    <path d="M 116,100 C 85,45 70,18 108,20 C 122,20 128,52 128,92 Z" fill="url(#earPink)"/>
+                                </g>
+
+                                <!-- 右耳朵 (向右下傾斜) -->
+                                <g class="ear-right">
+                                    <path d="M 175,105 C 240,40 280,60 255,105 C 235,135 200,125 185,120 Z" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="3"/>
+                                    <path d="M 182,107 C 232,52 265,68 245,102 C 230,125 202,118 190,115 Z" fill="url(#earPink)"/>
+                                </g>
+
+                                <!-- 6. 兔兔頭部 -->
+                                <ellipse cx="160" cy="135" rx="58" ry="50" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="3"/>
+
+                                <!-- 腮紅 -->
+                                <circle cx="120" cy="148" r="14" fill="url(#blushGrad)"/>
+                                <circle cx="200" cy="148" r="14" fill="url(#blushGrad)"/>
+
+                                <!-- 7. 表情：開心的彎彎笑眼 -->
+                                <path d="M 130,132 Q 138,122 146,132" fill="none" stroke="#4A3B32" stroke-width="4" stroke-linecap="round"/>
+                                <path d="M 174,132 Q 182,122 190,132" fill="none" stroke="#4A3B32" stroke-width="4" stroke-linecap="round"/>
+
+                                <!-- 鼻子與嘴巴 -->
+                                <ellipse cx="160" cy="138" rx="4" ry="3" fill="#8B4513"/>
+                                <path d="M 153,143 Q 160,149 167,143" fill="none" stroke="#8B4513" stroke-width="2.5" stroke-linecap="round"/>
+
+                                <!-- 8. 巨型傳統雕花月餅 (抱在胸前) -->
+                                <g class="giant-mooncake">
+                                    <!-- 花瓣外緣 (波浪花邊) -->
+                                    <path d="
+                                        M 160,165 
+                                        C 172,163 182,168 190,172
+                                        C 200,168 212,175 218,185
+                                        C 226,182 238,193 238,205
+                                        C 245,215 242,228 238,238
+                                        C 240,250 228,260 218,262
+                                        C 212,272 200,275 190,272
+                                        C 180,278 168,278 160,275
+                                        C 152,278 140,278 130,272
+                                        C 120,275 108,272 102,262
+                                        C 92,260 80,250 82,238
+                                        C 78,228 75,215 82,205
+                                        C 82,193 94,182 102,185
+                                        C 108,175 120,168 130,172
+                                        C 138,168 148,163 160,165 Z" 
+                                        fill="url(#mooncakeBg)" stroke="#B45309" stroke-width="3.5"/>
+
+                                    <!-- 月餅內圈裝飾刻痕 -->
+                                    <circle cx="160" cy="220" r="38" fill="none" stroke="#D97706" stroke-width="2.5" stroke-dasharray="6,3"/>
+                                    <circle cx="160" cy="220" r="28" fill="none" stroke="#B45309" stroke-width="2"/>
+
+                                    <!-- 月餅中央傳統花紋 -->
+                                    <path d="M 160,198 C 165,210 165,230 160,242 M 138,220 C 150,225 170,225 182,220" fill="none" stroke="url(#embossGrad)" stroke-width="3" stroke-linecap="round"/>
+                                    <path d="M 145,205 L 175,235 M 175,205 L 145,235" fill="none" stroke="url(#embossGrad)" stroke-width="2" stroke-linecap="round"/>
+                                    <circle cx="160" cy="220" r="8" fill="#FBBF24" stroke="#B45309" stroke-width="2"/>
+                                </g>
+
+                                <!-- 9. 兔兔前爪/手手 (緊抱月餅兩側) -->
+                                <g class="front-paws">
+                                    <ellipse cx="118" cy="188" rx="13" ry="10" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="2.5" transform="rotate(-20 118 188)"/>
+                                    <ellipse cx="202" cy="188" rx="13" ry="10" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="2.5" transform="rotate(20 202 188)"/>
+                                </g>
+
+                                <!-- 10. 兔兔後腿與大腳掌 (全身包含4條腿) -->
+                                <g class="back-feet">
+                                    <!-- 左後腳掌 (露粉紅肉墊與腳趾豆) -->
+                                    <g class="foot-left" transform="translate(100, 250) rotate(-15)">
+                                        <ellipse cx="0" cy="0" rx="22" ry="30" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="3"/>
+                                        <ellipse cx="0" cy="6" rx="13" ry="16" fill="#FFB6C1"/>
+                                        <circle cx="-11" cy="-14" r="5" fill="#FFB6C1"/>
+                                        <circle cx="0" cy="-18" r="5.5" fill="#FFB6C1"/>
+                                        <circle cx="11" cy="-14" r="5" fill="#FFB6C1"/>
+                                    </g>
+
+                                    <!-- 右後腳掌 (露粉紅肉墊與腳趾豆) -->
+                                    <g class="foot-right" transform="translate(220, 250) rotate(15)">
+                                        <ellipse cx="0" cy="0" rx="22" ry="30" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="3"/>
+                                        <ellipse cx="0" cy="6" rx="13" ry="16" fill="#FFB6C1"/>
+                                        <circle cx="-11" cy="-14" r="5" fill="#FFB6C1"/>
+                                        <circle cx="0" cy="-18" r="5.5" fill="#FFB6C1"/>
+                                        <circle cx="11" cy="-14" r="5" fill="#FFB6C1"/>
+                                    </g>
+                                </g>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="home-actions">
+                        <button id="start-game-btn" class="btn btn-primary btn-large">
+                            <span class="btn-icon">🥮</span> 開始遊戲 <span class="btn-icon">✨</span>
+                        </button>
+                    </div>
+
+                    <p class="sub-title">回答租稅問題，幫助玉兔收集五塊月餅！</p>
+                </div>
+            </section>
+
+            <!-- 2. 遊戲答題頁 (Quiz Screen) -->
+            <section id="screen-quiz" class="screen">
+                <div class="card quiz-card">
+                    <!-- 題目進度指示器 -->
+                    <div class="quiz-header-bar">
+                        <span id="question-badge" class="badge">第 1 / 5 題</span>
+                        <div class="quiz-progress-bar">
+                            <div id="quiz-progress-fill" class="progress-fill" style="width: 20%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- 題目主體 -->
+                    <div class="question-container">
+                        <h2 id="question-text" class="question-text">買東西可以使用什麼工具儲存雲端發票？</h2>
+                    </div>
+
+                    <!-- 答題選項 -->
+                    <div id="options-container" class="options-container">
+                        <!-- 由 JavaScript 動態渲染選項按鈕 -->
+                    </div>
+
+                    <!-- 答錯或答對反饋提示 -->
+                    <div id="feedback-message" class="feedback-message hidden">
+                        <!-- 提示訊息 -->
+                    </div>
+
+                    <!-- 玉兔即時反應動畫視窗 -->
+                    <div class="quiz-character-box">
+                        <div id="quiz-rabbit" class="rabbit-mini">
+                            <span class="rabbit-reaction-text" id="rabbit-speech">加油！答對就能拿月餅囉！</span>
+                            <div class="rabbit-sprite">🐇</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. 完成畫面 (Completion Screen) -->
+            <section id="screen-complete" class="screen">
+                <div class="card complete-card">
+                    <div class="celebration-badge">🎊 大獲全勝 🎊</div>
+                    <h1 class="complete-title">恭喜過關</h1>
+                    <h2 class="complete-subtitle">🏅 租稅達人 🏅</h2>
+
+                    <div class="complete-hero">
+                        <!-- 獲得5塊月餅的玉兔圖片慶祝 -->
+                        <div class="rabbit-victory">
+                            <div class="victory-mooncakes">🥮 🥮 🥮 🥮 🥮</div>
+                            <div class="victory-rabbit-emoji">🐰🎉</div>
+                        </div>
+                    </div>
+
+                    <button id="next-to-verify-btn" class="btn btn-success btn-large">
+                        下一步（領取宣導品） ➡️
+                    </button>
+                </div>
+            </section>
+
+            <!-- 4. 驗證頁 (Verification Screen) -->
+            <section id="screen-verify" class="screen">
+                <div class="card verify-card">
+                    <!-- 預設驗證輸入 state -->
+                    <div id="verify-form-state">
+                        <h2 class="verify-title">請交由工作人員輸入兌換碼</h2>
+
+                        <!-- 四位數獨立輸入框 -->
+                        <div class="digit-inputs-group">
+                            <input type="input" maxlength="1" class="digit-input" id="digit-1" inputmode="numeric" pattern="[0-9]*" autocomplete="off" aria-label="第1位數字">
+                            <input type="input" maxlength="1" class="digit-input" id="digit-2" inputmode="numeric" pattern="[0-9]*" autocomplete="off" aria-label="第2位數字">
+                            <input type="input" maxlength="1" class="digit-input" id="digit-3" inputmode="numeric" pattern="[0-9]*" autocomplete="off" aria-label="第3位數字">
+                            <input type="input" maxlength="1" class="digit-input" id="digit-4" inputmode="numeric" pattern="[0-9]*" autocomplete="off" aria-label="第4位數字">
+                        </div>
+
+                        <!-- 錯誤提示區域 -->
+                        <div id="verify-error-msg" class="verify-error-msg hidden">
+                            代碼錯誤，請重新輸入
+                        </div>
+
+                        <div class="verify-actions">
+                            <button id="verify-submit-btn" class="btn btn-primary btn-large">確認</button>
+                        </div>
+
+                        <div class="worksheet-entrance-wrapper">
+                            <button id="open-worksheet-btn-form" class="btn-text-reset">
+                                📋 工作人員專用：查看發放紀錄工作表
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 驗證成功畫面 (預設隱藏) -->
+                    <div id="verify-success-state" class="verify-success-box hidden">
+                        <div class="success-icon-wrapper">
+                            <svg class="checkmark-svg" viewBox="0 0 52 52">
+                                <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+                                <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                            </svg>
+                        </div>
+
+                        <h2 class="success-title">🎉 驗證成功！</h2>
+                        <div class="reward-notice-card">
+                            <p class="reward-main-text">請向工作人員出示此畫面</p>
+                            <p class="reward-sub-text">即可兌換宣導品 <strong>1 份</strong> 🎁</p>
+                            <div class="stamp-badge">已兌換核銷</div>
+                        </div>
+
+                        <div class="success-actions">
+                            <button id="open-worksheet-btn-success" class="btn-text-reset">
+                                📋 工作人員專用：查看發放紀錄工作表
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 工作人員密碼驗證 Modal -->
+            <div id="pwd-modal" class="modal-backdrop hidden">
+                <div class="pwd-modal-card">
+                    <div class="worksheet-header">
+                        <h3>🔒 工作人員身分驗證</h3>
+                        <button id="close-pwd-modal-btn" class="modal-close-btn" aria-label="關閉">&times;</button>
+                    </div>
+                    <div class="pwd-modal-body">
+                        <p class="pwd-instruction">請輸入工作人員管理密碼以查看與管理發放紀錄：</p>
+                        <div class="pwd-input-wrapper">
+                            <input type="password" id="staff-pwd-input" class="pwd-input" placeholder="請輸入密碼" autocomplete="off" />
+                        </div>
+                        <div id="pwd-error-msg" class="pwd-error-text hidden">
+                            ❌ 密碼錯誤，請重新輸入！
+                        </div>
+                    </div>
+                    <div class="pwd-modal-footer">
+                        <button id="pwd-clear-btn" class="btn btn-secondary btn-sm">清除</button>
+                        <button id="pwd-submit-btn" class="btn btn-primary btn-sm">確認輸入</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 清除紀錄確認 Modal -->
+            <div id="clear-confirm-modal" class="modal-backdrop hidden">
+                <div class="pwd-modal-card">
+                    <div class="worksheet-header" style="background: linear-gradient(135deg, #991b1b 0%, #dc2626 100%);">
+                        <h3>⚠️ 確定清空紀錄？</h3>
+                        <button id="close-clear-confirm-btn" class="modal-close-btn" aria-label="關閉">&times;</button>
+                    </div>
+                    <div class="pwd-modal-body">
+                        <p class="pwd-instruction" style="color: #991b1b; font-weight: 700;">此動作將永久刪除所有宣導品發放紀錄與時間，無法復原！</p>
+                    </div>
+                    <div class="pwd-modal-footer">
+                        <button id="clear-cancel-btn" class="btn btn-secondary btn-sm">取消</button>
+                        <button id="clear-submit-btn" class="btn btn-danger btn-sm">確定清空</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 宣導品發放紀錄工作表 Modal -->
+            <div id="worksheet-modal" class="modal-backdrop hidden">
+                <div class="worksheet-modal-card">
+                    <div class="worksheet-header">
+                        <h3>📊 宣導品發放紀錄工作表</h3>
+                        <button id="close-worksheet-modal-btn" class="modal-close-btn" aria-label="關閉">&times;</button>
+                    </div>
+                    <div class="worksheet-summary-bar">
+                        <span>累計成功發放人數：<strong id="worksheet-total-count" class="summary-num">0</strong> 人</span>
+                    </div>
+                    <div class="worksheet-table-wrapper">
+                        <table class="worksheet-table">
+                            <thead>
+                                <tr>
+                                    <th>序號</th>
+                                    <th>發放時間</th>
+                                    <th>兌換代碼</th>
+                                    <th>核銷狀態</th>
+                                </tr>
+                            </thead>
+                            <tbody id="worksheet-tbody">
+                                <!-- 動態填入發放紀錄 -->
+                            </tbody>
+                        </table>
+                        <div id="worksheet-empty-msg" class="worksheet-empty-msg">
+                            目前尚無發放紀錄
+                        </div>
+                    </div>
+                    <div class="worksheet-footer">
+                        <button id="export-csv-btn" class="btn btn-primary btn-sm">
+                            📥 匯出 Excel / CSV 表格
+                        </button>
+                        <button id="clear-worksheet-btn" class="btn btn-danger btn-sm">
+                            🗑️ 清除所有紀錄
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- JavaScript 腳本加載 -->
+    <script type="module" src="script.js"></script>
+</body>
+</html>
+
+

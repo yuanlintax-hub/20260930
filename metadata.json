@@ -1,0 +1,6 @@
+{
+  "name": "玉兔中秋租稅大冒險",
+  "description": "可愛Q版中秋主題租稅問答小遊戲，回答題目收集5塊月餅，輸入兌換碼7777領取宣導品。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
