@@ -1112,6 +1112,36 @@ html, body {
     color: #60a5fa;
 }
 
+/* 首頁下方工作人員查閱入口 (不明顯黑色/深色文字連結) */
+.home-staff-footer {
+    margin-top: 20px;
+    text-align: center;
+    padding-top: 8px;
+}
+
+.staff-only-link {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #000000;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    cursor: pointer;
+    text-decoration: none;
+    opacity: 0.35;
+    transition: opacity 0.2s ease, color 0.2s ease;
+    padding: 6px 14px;
+    border-radius: 4px;
+}
+
+.staff-only-link:hover,
+.staff-only-link:focus {
+    opacity: 0.85;
+    color: #000000;
+    text-decoration: underline;
+}
+
 /* 宣導品發放紀錄工作表 Modal 樣式 */
 .modal-backdrop {
     position: fixed;

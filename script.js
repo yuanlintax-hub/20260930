@@ -16,32 +16,32 @@ class Question {
             {
                 id: 1,
                 title: "買東西可以使用什麼工具儲存雲端發票？",
-                options: ["1 健保卡", "2 手機條碼（載具）", "3 身分證"],
-                correctIndex: 1 // 2 手機條碼（載具）
+                options: ["健保卡", "手機條碼（載具）", "身分證"],
+                correctIndex: 1 // 手機條碼（載具）
             },
             {
                 id: 2,
                 title: "擁有自用住宅要如何節稅？",
-                options: ["1 申請稅單分期繳納", "2 申請地價稅自用住宅優惠稅率", "3 申請轉帳納稅"],
-                correctIndex: 1 // 2 申請地價稅自用住宅優惠稅率
+                options: ["申請稅單分期繳納", "申請地價稅自用住宅優惠稅率", "申請轉帳納稅"],
+                correctIndex: 1 // 申請地價稅自用住宅優惠稅率
             },
             {
                 id: 3,
                 title: "地價稅自用住宅優惠稅率申請期限",
-                options: ["1 9月1日", "2 9月22日", "3 11月1日"],
-                correctIndex: 1 // 2 9月22日
+                options: ["9月1日", "9月22日", "11月1日"],
+                correctIndex: 1 // 9月22日
             },
             {
                 id: 4,
                 title: "何時繳納地價稅？",
-                options: ["1 5/1~5/30", "2 11/1~11/30", "3 12/1~12/31"],
-                correctIndex: 1 // 2 11/1~11/30
+                options: ["5月1日~5月30日", "11月1日~11月30日", "12月1日~12月31日"],
+                correctIndex: 1 // 11月1日~11月30日
             },
             {
                 id: 5,
                 title: "哪裡不能繳稅？",
-                options: ["1 超商", "2 郵局", "3 銀行"],
-                correctIndex: 1 // 2 郵局
+                options: ["超商", "郵局", "銀行"],
+                correctIndex: 1 // 郵局
             }
         ];
         this.currentIndex = 0;
@@ -561,6 +561,7 @@ class Game {
         this.verifyErrorMsg = document.getElementById('verify-error-msg');
 
         // Worksheet elements
+        this.openWorksheetBtnHome = document.getElementById('open-worksheet-btn-home');
         this.openWorksheetBtnForm = document.getElementById('open-worksheet-btn-form');
         this.openWorksheetBtnSuccess = document.getElementById('open-worksheet-btn-success');
         this.worksheetModal = document.getElementById('worksheet-modal');
@@ -681,6 +682,7 @@ class Game {
             this.animationEngine.playClickSound();
             this.openPwdModal();
         };
+        if (this.openWorksheetBtnHome) this.openWorksheetBtnHome.addEventListener('click', handleOpenPwdModal);
         if (this.openWorksheetBtnForm) this.openWorksheetBtnForm.addEventListener('click', handleOpenPwdModal);
         if (this.openWorksheetBtnSuccess) this.openWorksheetBtnSuccess.addEventListener('click', handleOpenPwdModal);
 
