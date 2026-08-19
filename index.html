@@ -71,10 +71,9 @@
                 </div>
             </div>
 
-            <!-- 頂部控制按鈕 (音效 toggle & 重設按鈕) -->
+            <!-- 頂部控制按鈕 (音效 toggle) -->
             <div class="header-controls">
                 <button id="sound-btn" class="icon-btn" title="切換音效" aria-label="切換音效">🔊</button>
-                <button id="restart-header-btn" class="icon-btn restart-btn" title="重新開始" aria-label="重新開始">🔄 重新開始</button>
             </div>
         </header>
 
@@ -294,10 +293,143 @@
                     <h2 class="complete-subtitle">🏅 租稅達人 🏅</h2>
 
                     <div class="complete-hero">
-                        <!-- 獲得5塊月餅的玉兔圖片慶祝 -->
-                        <div class="rabbit-victory">
-                            <div class="victory-mooncakes">🥮 🥮 🥮 🥮 🥮</div>
-                            <div class="victory-rabbit-emoji">🐰🎉</div>
+                        <!-- 雙吉祥物慶祝區：玉兔 (與首頁同款) + 超人小橘 (比讚頭像/全身立繪) -->
+                        <div class="duo-mascots-container">
+                            
+                            <!-- 1. 玉兔 (與首頁同一隻抱大月餅) -->
+                            <div class="mascot-item rabbit-item bounce-idle">
+                                <svg class="rabbit-svg mascot-victory-svg" viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">
+                                    <defs>
+                                        <linearGradient id="compEarPink" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stop-color="#FFB6C1"/>
+                                            <stop offset="100%" stop-color="#FFA07A"/>
+                                        </linearGradient>
+                                        <radialGradient id="compBlushGrad" cx="50%" cy="50%" r="50%">
+                                            <stop offset="0%" stop-color="#FF99AC" stop-opacity="0.85"/>
+                                            <stop offset="100%" stop-color="#FF99AC" stop-opacity="0"/>
+                                        </radialGradient>
+                                        <radialGradient id="compMooncakeBg" cx="40%" cy="40%" r="60%">
+                                            <stop offset="0%" stop-color="#FBBF24"/>
+                                            <stop offset="60%" stop-color="#F59E0B"/>
+                                            <stop offset="100%" stop-color="#D97706"/>
+                                        </radialGradient>
+                                        <linearGradient id="compEmbossGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stop-color="#92400E"/>
+                                            <stop offset="100%" stop-color="#B45309"/>
+                                        </linearGradient>
+                                        <linearGradient id="compSteamGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+                                            <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.7"/>
+                                            <stop offset="50%" stop-color="#FEF3C7" stop-opacity="0.5"/>
+                                            <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+                                        </linearGradient>
+                                        <radialGradient id="compGroundShadow" cx="50%" cy="50%" r="50%">
+                                            <stop offset="0%" stop-color="#000000" stop-opacity="0.35"/>
+                                            <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+                                        </radialGradient>
+                                    </defs>
+
+                                    <!-- 地面陰影 -->
+                                    <ellipse cx="160" cy="295" rx="110" ry="16" fill="url(#compGroundShadow)"/>
+
+                                    <!-- 茶杯與熱氣 -->
+                                    <g class="teacup-group">
+                                        <path d="M 50,265 C 40,245 65,230 45,205 C 35,190 55,175 48,160" fill="none" stroke="url(#compSteamGrad)" stroke-width="12" stroke-linecap="round" opacity="0.8"/>
+                                        <path d="M 32,270 L 38,295 C 39,298 42,300 46,300 L 64,300 C 68,300 71,298 72,295 L 78,270 Z" fill="#8B5A2B" stroke="#5C3A17" stroke-width="2"/>
+                                        <ellipse cx="55" cy="270" rx="23" ry="5" fill="#704214"/>
+                                        <ellipse cx="55" cy="270" rx="20" ry="3.5" fill="#A3E635"/>
+                                    </g>
+
+                                    <!-- 尾巴 -->
+                                    <circle cx="85" cy="255" r="22" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="2.5"/>
+                                    <circle cx="88" cy="252" r="18" fill="#FFFDF8"/>
+
+                                    <!-- 身體 -->
+                                    <path d="M 95,170 C 70,210 75,270 135,280 C 180,285 240,270 230,210 C 225,180 200,160 170,160 Z" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="3"/>
+
+                                    <!-- 耳朵 -->
+                                    <g class="ear-left">
+                                        <path d="M 120,110 C 80,40 60,5 110,10 C 130,10 135,50 135,100 Z" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="3"/>
+                                        <path d="M 116,100 C 85,45 70,18 108,20 C 122,20 128,52 128,92 Z" fill="url(#compEarPink)"/>
+                                    </g>
+                                    <g class="ear-right">
+                                        <path d="M 175,105 C 240,40 280,60 255,105 C 235,135 200,125 185,120 Z" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="3"/>
+                                        <path d="M 182,107 C 232,52 265,68 245,102 C 230,125 202,118 190,115 Z" fill="url(#compEarPink)"/>
+                                    </g>
+
+                                    <!-- 頭部與腮紅 -->
+                                    <ellipse cx="160" cy="135" rx="58" ry="50" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="3"/>
+                                    <circle cx="120" cy="148" r="14" fill="url(#compBlushGrad)"/>
+                                    <circle cx="200" cy="148" r="14" fill="url(#compBlushGrad)"/>
+
+                                    <!-- 笑臉與表情 -->
+                                    <path d="M 130,132 Q 138,122 146,132" fill="none" stroke="#4A3B32" stroke-width="4" stroke-linecap="round"/>
+                                    <path d="M 174,132 Q 182,122 190,132" fill="none" stroke="#4A3B32" stroke-width="4" stroke-linecap="round"/>
+                                    <ellipse cx="160" cy="138" rx="4" ry="3" fill="#8B4513"/>
+                                    <path d="M 153,143 Q 160,149 167,143" fill="none" stroke="#8B4513" stroke-width="2.5" stroke-linecap="round"/>
+
+                                    <!-- 巨型雕花月餅 -->
+                                    <g class="giant-mooncake">
+                                        <path d="
+                                            M 160,165 
+                                            C 172,163 182,168 190,172
+                                            C 200,168 212,175 218,185
+                                            C 226,182 238,193 238,205
+                                            C 245,215 242,228 238,238
+                                            C 240,250 228,260 218,262
+                                            C 212,272 200,275 190,272
+                                            C 180,278 168,278 160,275
+                                            C 152,278 140,278 130,272
+                                            C 120,275 108,272 102,262
+                                            C 92,260 80,250 82,238
+                                            C 78,228 75,215 82,205
+                                            C 82,193 94,182 102,185
+                                            C 108,175 120,168 130,172
+                                            C 138,168 148,163 160,165 Z" 
+                                            fill="url(#compMooncakeBg)" stroke="#B45309" stroke-width="3.5"/>
+                                        <circle cx="160" cy="220" r="38" fill="none" stroke="#D97706" stroke-width="2.5" stroke-dasharray="6,3"/>
+                                        <circle cx="160" cy="220" r="28" fill="none" stroke="#B45309" stroke-width="2"/>
+                                        <path d="M 160,198 C 165,210 165,230 160,242 M 138,220 C 150,225 170,225 182,220" fill="none" stroke="url(#compEmbossGrad)" stroke-width="3" stroke-linecap="round"/>
+                                        <path d="M 145,205 L 175,235 M 175,205 L 145,235" fill="none" stroke="url(#compEmbossGrad)" stroke-width="2" stroke-linecap="round"/>
+                                        <circle cx="160" cy="220" r="8" fill="#FBBF24" stroke="#B45309" stroke-width="2"/>
+                                    </g>
+
+                                    <!-- 手手抱月餅 -->
+                                    <g class="front-paws">
+                                        <ellipse cx="118" cy="188" rx="13" ry="10" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="2.5" transform="rotate(-20 118 188)"/>
+                                        <ellipse cx="202" cy="188" rx="13" ry="10" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="2.5" transform="rotate(20 202 188)"/>
+                                    </g>
+
+                                    <!-- 後腳掌肉墊 -->
+                                    <g class="back-feet">
+                                        <g class="foot-left" transform="translate(100, 250) rotate(-15)">
+                                            <ellipse cx="0" cy="0" rx="22" ry="30" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="3"/>
+                                            <ellipse cx="0" cy="6" rx="13" ry="16" fill="#FFB6C1"/>
+                                            <circle cx="-11" cy="-14" r="5" fill="#FFB6C1"/>
+                                            <circle cx="0" cy="-18" r="5.5" fill="#FFB6C1"/>
+                                            <circle cx="11" cy="-14" r="5" fill="#FFB6C1"/>
+                                        </g>
+                                        <g class="foot-right" transform="translate(220, 250) rotate(15)">
+                                            <ellipse cx="0" cy="0" rx="22" ry="30" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="3"/>
+                                            <ellipse cx="0" cy="6" rx="13" ry="16" fill="#FFB6C1"/>
+                                            <circle cx="-11" cy="-14" r="5" fill="#FFB6C1"/>
+                                            <circle cx="0" cy="-18" r="5.5" fill="#FFB6C1"/>
+                                            <circle cx="11" cy="-14" r="5" fill="#FFB6C1"/>
+                                        </g>
+                                    </g>
+                                </svg>
+                            </div>
+
+                            <!-- 2. 超人小橘 (100% 原始去背 PNG：orange_cat_pomelo.png，具備上下移動彈跳動態) -->
+                            <div class="mascot-item cat-item bounce-idle" id="cat-mascot-protected-container">
+                                <img id="orange-cat-protected-img" 
+                                     class="mascot-victory-img" 
+                                     src="/assets/orange_cat_pomelo.png" 
+                                     alt="超人小橘拿柚子比讚" 
+                                     draggable="false"
+                                     onerror="if(this.src.indexOf('小橘拿柚子.png')===-1){ this.src='/assets/小橘拿柚子.png'; } else if(this.src.indexOf('little_orange_pomelo.svg')===-1){ this.src='/assets/little_orange_pomelo.svg'; }"
+                                />
+                            </div>
+
                         </div>
                     </div>
 

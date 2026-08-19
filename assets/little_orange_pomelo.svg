@@ -1,0 +1,222 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 500" width="100%" height="100%">
+  <defs>
+    <!-- 柚子青黃漸層 -->
+    <radialGradient id="pomeloGrad" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#FEF08A"/>
+      <stop offset="35%" stop-color="#D9F99D"/>
+      <stop offset="70%" stop-color="#A3E635"/>
+      <stop offset="100%" stop-color="#65A30D"/>
+    </radialGradient>
+
+    <!-- 柚子葉片漸層 -->
+    <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4ADE80"/>
+      <stop offset="100%" stop-color="#15803D"/>
+    </linearGradient>
+
+    <!-- 小橘毛色漸層 -->
+    <linearGradient id="catOrange" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FB923C"/>
+      <stop offset="60%" stop-color="#F97316"/>
+      <stop offset="100%" stop-color="#EA580C"/>
+    </linearGradient>
+
+    <!-- 超人裝藍色漸層 -->
+    <linearGradient id="superSuit" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="40%" stop-color="#0284C7"/>
+      <stop offset="100%" stop-color="#0369A1"/>
+    </linearGradient>
+
+    <!-- 披風紅色漸層 -->
+    <linearGradient id="superCape" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EF4444"/>
+      <stop offset="60%" stop-color="#DC2626"/>
+      <stop offset="100%" stop-color="#991B1B"/>
+    </linearGradient>
+
+    <!-- 財字胸章金色漸層 -->
+    <radialGradient id="badgeGold" cx="40%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#FEF08A"/>
+      <stop offset="60%" stop-color="#FACC15"/>
+      <stop offset="100%" stop-color="#EAB308"/>
+    </radialGradient>
+
+    <!-- 地面陰影 -->
+    <radialGradient id="catShadow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- 地面陰影 -->
+  <ellipse cx="205" cy="475" rx="110" ry="14" fill="url(#catShadow)"/>
+
+  <!-- 1. 紅色超人披風 (身後飄揚) -->
+  <g id="cape">
+    <path d="M 140,285 C 90,320 85,410 115,440 C 150,445 175,395 190,360 C 160,340 145,310 140,285 Z" fill="url(#superCape)" stroke="#0F172A" stroke-width="4.5" stroke-linejoin="round"/>
+    <path d="M 230,300 C 270,340 310,405 285,435 C 265,440 240,410 220,380 Z" fill="url(#superCape)" stroke="#0F172A" stroke-width="4.5" stroke-linejoin="round"/>
+  </g>
+
+  <!-- 2. 踢腿動作與紅靴子 (跳躍開朗姿勢) -->
+  <!-- 左腿 (抬腿往右上方踢) -->
+  <g id="left-leg">
+    <!-- 藍色褲管 -->
+    <path d="M 215,355 L 245,368 C 255,372 260,385 252,398 L 235,395 Z" fill="url(#superSuit)" stroke="#0F172A" stroke-width="4"/>
+    <!-- 紅色靴子 (在空中踢腿) -->
+    <g transform="translate(230, 345) rotate(-35)">
+      <ellipse cx="40" cy="40" rx="32" ry="22" fill="#DC2626" stroke="#0F172A" stroke-width="4.5"/>
+      <path d="M 20,32 C 15,20 28,15 40,24 C 55,35 65,55 50,60 C 35,65 18,48 20,32 Z" fill="#DC2626"/>
+    </g>
+  </g>
+
+  <!-- 右腿 (支撐單腳站立) -->
+  <g id="right-leg">
+    <!-- 藍色褲管 -->
+    <path d="M 160,355 L 175,415 L 205,415 L 205,355 Z" fill="url(#superSuit)" stroke="#0F172A" stroke-width="4"/>
+    <!-- 紅色長靴 (站立微彎) -->
+    <path d="M 168,410 L 160,435 C 155,455 140,468 152,488 C 160,498 185,502 195,488 C 205,475 208,445 206,410 Z" fill="#DC2626" stroke="#0F172A" stroke-width="4.5" stroke-linejoin="round"/>
+  </g>
+
+  <!-- 3. 超人藍色身體 -->
+  <g id="torso">
+    <path d="M 140,270 C 130,315 135,360 200,360 C 265,360 270,315 260,270 Z" fill="url(#superSuit)" stroke="#0F172A" stroke-width="5"/>
+    
+    <!-- 紅色超人腰帶 -->
+    <path d="M 137,322 L 263,322 L 260,340 L 140,340 Z" fill="#DC2626" stroke="#0F172A" stroke-width="4"/>
+    <!-- 腰帶扣 -->
+    <rect x="188" y="318" width="24" height="26" rx="3" fill="#DC2626" stroke="#0F172A" stroke-width="3"/>
+    <rect x="193" y="323" width="14" height="16" rx="2" fill="#FACC15" stroke="#B45309" stroke-width="2"/>
+
+    <!-- 胸前黃色「財」字徽章 (稅務超人官方圖騰) -->
+    <g id="chest-badge">
+      <circle cx="200" cy="290" r="30" fill="url(#badgeGold)" stroke="#0F172A" stroke-width="5"/>
+      <!-- 官方深藍色財字圖騰 (屋頂造型 + 貝字/鼎紋內部細節) -->
+      <path d="M 184,272 L 216,272 L 216,277 L 208,277 L 222,310 L 208,310 L 204,302 L 196,302 L 192,310 L 178,310 L 192,277 L 184,277 Z" fill="#1E3A8A"/>
+      <path d="M 186,274 L 214,274 L 214,278 L 206,278 L 219,308 L 209,308 L 206,301 L 194,301 L 191,308 L 181,308 L 194,278 L 186,278 Z" fill="#1E3A8A"/>
+      <!-- 內部黃色細緻鏤空線條 -->
+      <line x1="200" y1="277" x2="200" y2="300" stroke="#FACC15" stroke-width="2.5"/>
+      <line x1="193" y1="285" x2="207" y2="285" stroke="#FACC15" stroke-width="2"/>
+      <line x1="193" y1="293" x2="207" y2="293" stroke="#FACC15" stroke-width="2"/>
+      <circle cx="200" cy="293" r="1.5" fill="#FACC15"/>
+    </g>
+  </g>
+
+  <!-- 4. 右手抱柚子 (文旦柚子 + 手掌托住) -->
+  <g id="right-arm-pomelo">
+    <!-- 藍色右手臂伸出 -->
+    <path d="M 142,280 C 105,285 70,305 60,340 C 70,355 90,345 105,335 L 145,305 Z" fill="url(#superSuit)" stroke="#0F172A" stroke-width="4.5"/>
+    
+    <!-- 柚子本體 (大顆多汁文旦柚) -->
+    <g id="pomelo" transform="translate(18, 140)">
+      <!-- 柚子葉片 -->
+      <path d="M 45,28 C 30,12 10,20 8,35 C 10,48 30,45 42,32 Z" fill="url(#leafGrad)" stroke="#0F172A" stroke-width="3"/>
+      <path d="M 12,32 Q 28,30 42,30" fill="none" stroke="#15803D" stroke-width="2" stroke-linecap="round"/>
+      <!-- 柚子果蒂 (棕色小梗) -->
+      <path d="M 42,28 L 47,20 C 48,16 53,16 54,20 L 50,30 Z" fill="#78350F" stroke="#0F172A" stroke-width="2"/>
+      
+      <!-- 柚子水滴果形 -->
+      <path d="
+        M 48,28 
+        C 35,45 20,70 12,100 
+        C 2,135 15,168 45,178 
+        C 75,188 108,172 118,135 
+        C 125,98 100,60 62,30 
+        C 58,26 52,26 48,28 Z" 
+        fill="url(#pomeloGrad)" stroke="#0F172A" stroke-width="4.5"/>
+      
+      <!-- 柚子皮斑點與光澤 -->
+      <circle cx="45" cy="80" r="1.5" fill="#65A30D" opacity="0.6"/>
+      <circle cx="65" cy="95" r="1.5" fill="#65A30D" opacity="0.6"/>
+      <circle cx="55" cy="115" r="1.5" fill="#65A30D" opacity="0.6"/>
+      <circle cx="75" cy="130" r="1.5" fill="#65A30D" opacity="0.6"/>
+      <circle cx="35" cy="135" r="1.5" fill="#65A30D" opacity="0.6"/>
+      <circle cx="85" cy="110" r="1.5" fill="#65A30D" opacity="0.6"/>
+      <circle cx="48" cy="155" r="1.5" fill="#65A30D" opacity="0.6"/>
+      <circle cx="70" cy="150" r="1.5" fill="#65A30D" opacity="0.6"/>
+    </g>
+
+    <!-- 橘色貓爪手指托住柚子底部 (4個圓滾滾指節) -->
+    <g id="cat-fingers">
+      <circle cx="40" cy="275" r="12" fill="#F97316" stroke="#0F172A" stroke-width="4"/>
+      <circle cx="46" cy="295" r="13" fill="#F97316" stroke="#0F172A" stroke-width="4"/>
+      <circle cx="62" cy="312" r="14" fill="#F97316" stroke="#0F172A" stroke-width="4"/>
+    </g>
+  </g>
+
+  <!-- 5. 左手比讚 👍 (朝氣高舉比讚手勢) -->
+  <g id="left-arm-thumbsup">
+    <!-- 藍色手臂往右上伸展 -->
+    <path d="M 255,275 C 295,280 340,265 370,230 L 350,210 C 325,235 290,250 250,250 Z" fill="url(#superSuit)" stroke="#0F172A" stroke-width="4.5"/>
+    
+    <!-- 白色手套大拇指比讚手部 -->
+    <g id="thumbs-up-hand" transform="translate(325, 180)">
+      <!-- 手掌主體 -->
+      <path d="M 20,45 C 5,50 5,80 30,85 C 55,90 75,75 70,45 C 65,25 40,25 20,45 Z" fill="#FFFFFF" stroke="#0F172A" stroke-width="4.5"/>
+      
+      <!-- 豎起的大拇指 (朝天挺立比讚) -->
+      <path d="M 30,45 C 25,20 28,-5 42,-8 C 55,-10 62,12 55,40 Z" fill="#FFFFFF" stroke="#0F172A" stroke-width="4.5"/>
+      
+      <!-- 彎曲握拳指節線 -->
+      <path d="M 45,45 C 62,45 68,58 55,62" fill="#FFFFFF" stroke="#0F172A" stroke-width="4"/>
+      <path d="M 40,62 C 60,62 66,74 52,78" fill="#FFFFFF" stroke="#0F172A" stroke-width="4"/>
+      <path d="M 36,78 C 52,78 58,88 45,90" fill="#FFFFFF" stroke="#0F172A" stroke-width="3.5"/>
+      
+      <!-- 大拇指關節紋路 -->
+      <path d="M 36,15 Q 44,18 48,15" fill="none" stroke="#94A3B8" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+  </g>
+
+  <!-- 6. 小橘貓頭部與臉部特寫 (依據原圖精準繪製) -->
+  <g id="cat-head">
+    <!-- 左貓耳 (直挺尖角) -->
+    <path d="M 125,95 L 85,15 C 80,6 100,8 116,25 L 160,75 Z" fill="#F97316" stroke="#0F172A" stroke-width="5" stroke-linejoin="round"/>
+    <path d="M 115,80 L 96,28 C 98,24 108,28 118,40 L 145,70 Z" fill="#B45309"/>
+
+    <!-- 右貓耳 (直挺尖角) -->
+    <path d="M 275,95 L 315,15 C 320,6 300,8 284,25 L 240,75 Z" fill="#F97316" stroke="#0F172A" stroke-width="5" stroke-linejoin="round"/>
+    <path d="M 285,80 L 304,28 C 302,24 292,28 282,40 L 255,70 Z" fill="#B45309"/>
+
+    <!-- 橘色大臉蛋 (圓潤飽滿) -->
+    <ellipse cx="200" cy="135" rx="122" ry="105" fill="url(#catOrange)" stroke="#0F172A" stroke-width="5"/>
+
+    <!-- 額頭三道棕色虎斑紋 -->
+    <g id="head-stripes">
+      <path d="M 160,42 C 160,65 165,82 168,92 C 174,92 176,86 175,76 C 173,60 170,42 165,42 Z" fill="#92400E"/>
+      <path d="M 194,36 C 194,62 196,86 197,100 C 205,100 207,96 207,82 C 207,60 204,36 199,36 Z" fill="#92400E"/>
+      <path d="M 238,42 C 238,65 233,82 230,92 C 224,92 222,86 223,76 C 225,60 228,42 233,42 Z" fill="#92400E"/>
+    </g>
+
+    <!-- 下半臉白色大區塊 (Muzzle) - 包含額頭中央向上凸起三角形 -->
+    <path d="
+      M 85,150 
+      C 90,205 135,230 200,230 
+      C 265,230 310,205 315,150 
+      C 280,170 235,120 200,90 
+      C 165,120 120,170 85,150 Z" 
+      fill="#FFFFFF" stroke="#0F172A" stroke-width="5"/>
+
+    <!-- 彎彎開心的咪咪笑眼 (^ ^ 弧線) -->
+    <path d="M 132,130 Q 148,106 166,130" fill="none" stroke="#0F172A" stroke-width="7" stroke-linecap="round"/>
+    <path d="M 234,130 Q 252,106 270,130" fill="none" stroke="#0F172A" stroke-width="7" stroke-linecap="round"/>
+
+    <!-- 棕色小鼻子 (圓角倒三角形) -->
+    <path d="M 190,144 Q 200,138 210,144 Q 200,158 190,144 Z" fill="#78350F" stroke="#0F172A" stroke-width="3"/>
+
+    <!-- 大開口開懷大笑嘴巴 (露出紅舌頭) -->
+    <g id="open-mouth">
+      <!-- 黑色外輪廓與暗紅口腔 -->
+      <path d="M 180,160 Q 200,150 220,160 C 230,202 170,202 180,160 Z" fill="#991B1B" stroke="#0F172A" stroke-width="4.5" stroke-linejoin="round"/>
+      <!-- 粉紅舌頭 -->
+      <path d="M 184,175 C 190,168 210,168 216,175 C 220,195 180,195 184,175 Z" fill="#FB7185"/>
+      <!-- 嘴唇上緣 W 微笑分界 -->
+      <path d="M 178,160 Q 188,166 200,156 Q 212,166 222,160" fill="none" stroke="#0F172A" stroke-width="4" stroke-linecap="round"/>
+    </g>
+
+    <!-- 左右臉頰各3根黑鬍鬚 -->
+    <g id="whiskers">
+      <path d="M 98,145 L 138,154 M 95,162 L 137,162 M 98,178 L 138,170" fill="none" stroke="#0F172A" stroke-width="4.5" stroke-linecap="round"/>
+      <path d="M 302,145 L 262,154 M 305,162 L 263,162 M 302,178 L 262,170" fill="none" stroke="#0F172A" stroke-width="4.5" stroke-linecap="round"/>
+    </g>
+  </g>
+</svg>

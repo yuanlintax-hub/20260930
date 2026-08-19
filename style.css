@@ -556,6 +556,15 @@ html, body {
     animation: rabbitIdleBounce 2.5s infinite ease-in-out;
 }
 
+.bounce-idle-delayed {
+    animation: rabbitIdleBounce 2.5s infinite ease-in-out;
+}
+
+@keyframes bounceIdle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-16px); }
+}
+
 @keyframes rabbitIdleBounce {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-16px); }
@@ -847,35 +856,64 @@ html, body {
 }
 
 .complete-hero {
-    margin: 15px 0;
+    margin: 10px 0 16px 0;
+    width: 100%;
 }
 
-.rabbit-victory {
+.duo-mascots-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: clamp(12px, 4vw, 28px);
+    width: 100%;
+}
+
+.mascot-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
+    flex: 0 1 auto;
 }
 
-.victory-mooncakes {
-    font-size: 36px;
-    letter-spacing: 6px;
-    animation: mooncakesFloat 2s infinite ease-in-out alternate;
+.mascot-victory-svg,
+.mascot-victory-img {
+    width: clamp(120px, 32vw, 190px);
+    height: auto;
+    max-height: 200px;
+    object-fit: contain;
+    image-rendering: auto;
+    filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.15));
+    transition: transform 0.3s ease;
+    user-select: none;
+    -webkit-user-drag: none;
 }
 
-@keyframes mooncakesFloat {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(-10px); }
+.mascot-victory-svg:hover,
+.mascot-victory-img:hover {
+    transform: scale(1.05);
 }
 
-.victory-rabbit-emoji {
-    font-size: 80px;
-    animation: victoryDance 1s infinite ease-in-out alternate;
+.mascot-name-tag {
+    margin-top: 6px;
+    padding: 3px 12px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid #cbd5e1;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: clamp(13px, 3.2vw, 15px);
+    color: #1e3a8a;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+    white-space: nowrap;
 }
 
-@keyframes victoryDance {
-    0% { transform: rotate(-10deg) scale(0.95); }
-    100% { transform: rotate(10deg) scale(1.05); }
+.cat-name-tag {
+    border-color: #fdba74;
+    color: #c2410c;
+    background: #fff7ed;
+}
+
+.bounce-idle-delayed {
+    animation: bounceIdle 2.5s infinite ease-in-out 0.4s;
 }
 
 .complete-desc {
@@ -1639,6 +1677,15 @@ html, body {
     .rabbit-svg {
         width: 130px;
         height: 130px;
+    }
+
+    .mascot-victory-svg {
+        width: clamp(100px, 30vw, 135px);
+        height: auto;
+    }
+    
+    .duo-mascots-container {
+        gap: 10px;
     }
     
     .question-text {
