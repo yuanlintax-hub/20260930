@@ -407,11 +407,25 @@
             <div id="worksheet-modal" class="modal-backdrop hidden">
                 <div class="worksheet-modal-card">
                     <div class="worksheet-header">
-                        <h3>📊 宣導品發放紀錄工作表</h3>
-                        <button id="close-worksheet-modal-btn" class="modal-close-btn" aria-label="關閉">&times;</button>
+                        <h3>📊 跨裝置租稅遊戲統計與發放紀錄</h3>
+                        <div class="header-action-group">
+                            <button id="refresh-worksheet-btn" class="btn-refresh" title="更新最新即時統計">🔄 重新整理</button>
+                            <button id="close-worksheet-modal-btn" class="modal-close-btn" aria-label="關閉">&times;</button>
+                        </div>
                     </div>
                     <div class="worksheet-summary-bar">
-                        <span>累計成功發放人數：<strong id="worksheet-total-count" class="summary-num">0</strong> 人</span>
+                        <div class="summary-item">
+                            <span class="summary-label">🎮 累計遊玩總人次：</span>
+                            <strong id="worksheet-total-plays" class="summary-num">0</strong> 人次
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">🎁 累計核銷宣導品：</span>
+                            <strong id="worksheet-total-redemptions" class="summary-num summary-green">0</strong> 人
+                        </div>
+                        <div class="summary-item summary-devices">
+                            <span class="device-pill">📱 手機/平板: <strong id="worksheet-phone-plays">0</strong></span>
+                            <span class="device-pill">💻 電腦: <strong id="worksheet-pc-plays">0</strong></span>
+                        </div>
                     </div>
                     <div class="worksheet-table-wrapper">
                         <table class="worksheet-table">
@@ -419,6 +433,7 @@
                                 <tr>
                                     <th>序號</th>
                                     <th>發放時間</th>
+                                    <th>來源裝置</th>
                                     <th>兌換代碼</th>
                                     <th>核銷狀態</th>
                                 </tr>
@@ -428,16 +443,46 @@
                             </tbody>
                         </table>
                         <div id="worksheet-empty-msg" class="worksheet-empty-msg">
-                            目前尚無發放紀錄
+                            目前尚無跨裝置發放紀錄
                         </div>
                     </div>
                     <div class="worksheet-footer">
-                        <button id="export-csv-btn" class="btn btn-primary btn-sm">
-                            📥 匯出 Excel / CSV 表格
-                        </button>
-                        <button id="clear-worksheet-btn" class="btn btn-danger btn-sm">
-                            🗑️ 清除所有紀錄
-                        </button>
+                        <div class="sync-status-indicator">
+                            <span class="live-dot"></span> 跨手機/電腦雲端同步中
+                        </div>
+                        <div class="footer-btn-group">
+                            <button id="sheets-config-btn" class="btn btn-secondary btn-sm" title="設定 Google 試算表即時連動">
+                                📊 試算表連動
+                            </button>
+                            <button id="export-csv-btn" class="btn btn-primary btn-sm">
+                                📥 匯出 Excel / CSV 表格
+                            </button>
+                            <button id="clear-worksheet-btn" class="btn btn-danger btn-sm">
+                                🗑️ 清除所有紀錄
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Google 試算表連動設定 Modal -->
+            <div id="sheets-modal" class="modal-backdrop hidden">
+                <div class="modal-card" style="max-width: 540px; text-align: left;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <h4 style="margin:0; font-size:1.2rem; color:#1e293b; font-weight:700;">📊 Google 試算表 (Sheets) 即時連動</h4>
+                        <button id="close-sheets-modal-btn" class="modal-close-btn">&times;</button>
+                    </div>
+                    <p style="font-size:0.9rem; color:#64748b; line-height:1.5; margin-bottom:12px;">
+                        系統預設已具備<b>全自動跨手機/電腦雲端同步</b>功能。若機關同仁希望每一筆遊玩與宣導品核銷亦即時寫入機關專屬的 <b>Google 試算表</b>，可於下方貼上 Google Apps Script 網頁應用程式網址：
+                    </p>
+                    <div style="margin-bottom:12px;">
+                        <label for="sheets-webhook-url-input" style="font-size:0.85rem; font-weight:700; color:#334155; display:block; margin-bottom:6px;">Google Apps Script Web App URL：</label>
+                        <input id="sheets-webhook-url-input" type="url" placeholder="https://script.google.com/macros/s/.../exec" style="width:100%; padding:10px 12px; border:2px solid #cbd5e1; border-radius:8px; font-size:0.9rem; box-sizing:border-box;">
+                    </div>
+                    <div id="sheets-status-msg" class="hidden" style="margin-bottom:12px; font-size:0.85rem; padding:8px 12px; border-radius:6px;"></div>
+                    <div style="display:flex; gap:10px; justify-content:flex-end;">
+                        <button id="sheets-test-btn" class="btn btn-secondary btn-sm">測試連線</button>
+                        <button id="sheets-save-btn" class="btn btn-primary btn-sm">儲存設定</button>
                     </div>
                 </div>
             </div>

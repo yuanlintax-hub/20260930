@@ -495,6 +495,9 @@ class CodeVerify {
     }
 }
 
+// 全球跨手機與電腦通用之雲端即時同步資料庫節點 (支援 GitHub Pages 靜態託管與跨裝置即時連線)
+const CLOUD_DB_URL = 'https://kvdb.io/Rzq4Se1xwbYS1SW3fYY9vA/tax_game_data';
+
 /**
  * 類別 5: Game - 主遊戲核心邏輯與畫面流轉控制器
  */
@@ -516,6 +519,7 @@ class Game {
 
         this.generateStarsBackground();
         this.bindEvents();
+        this.fetchServerStats();
     }
 
     /**
@@ -554,11 +558,25 @@ class Game {
         this.openWorksheetBtnSuccess = document.getElementById('open-worksheet-btn-success');
         this.worksheetModal = document.getElementById('worksheet-modal');
         this.closeWorksheetModalBtn = document.getElementById('close-worksheet-modal-btn');
-        this.worksheetTotalCount = document.getElementById('worksheet-total-count');
+        this.refreshWorksheetBtn = document.getElementById('refresh-worksheet-btn');
+        this.worksheetTotalPlays = document.getElementById('worksheet-total-plays');
+        this.worksheetTotalRedemptions = document.getElementById('worksheet-total-redemptions');
+        this.worksheetPhonePlays = document.getElementById('worksheet-phone-plays');
+        this.worksheetPcPlays = document.getElementById('worksheet-pc-plays');
         this.worksheetTbody = document.getElementById('worksheet-tbody');
         this.worksheetEmptyMsg = document.getElementById('worksheet-empty-msg');
         this.exportCsvBtn = document.getElementById('export-csv-btn');
         this.clearWorksheetBtn = document.getElementById('clear-worksheet-btn');
+
+        // Cached multi-device stats & polling timer
+        this.cachedStats = {
+            totalPlays: 0,
+            phonePlays: 0,
+            pcPlays: 0,
+            totalRedemptions: 0,
+            redemptions: []
+        };
+        this.pollInterval = null;
 
         // Password Verification Modal elements
         this.pwdModal = document.getElementById('pwd-modal');
@@ -573,6 +591,15 @@ class Game {
         this.closeClearConfirmBtn = document.getElementById('close-clear-confirm-btn');
         this.clearCancelBtn = document.getElementById('clear-cancel-btn');
         this.clearSubmitBtn = document.getElementById('clear-submit-btn');
+
+        // Google Sheets Sync Modal elements
+        this.sheetsConfigBtn = document.getElementById('sheets-config-btn');
+        this.sheetsModal = document.getElementById('sheets-modal');
+        this.closeSheetsModalBtn = document.getElementById('close-sheets-modal-btn');
+        this.sheetsWebhookUrlInput = document.getElementById('sheets-webhook-url-input');
+        this.sheetsStatusMsg = document.getElementById('sheets-status-msg');
+        this.sheetsTestBtn = document.getElementById('sheets-test-btn');
+        this.sheetsSaveBtn = document.getElementById('sheets-save-btn');
     }
 
     /**
@@ -676,6 +703,14 @@ class Game {
             });
         }
 
+        // 重新整理工作表數據
+        if (this.refreshWorksheetBtn) {
+            this.refreshWorksheetBtn.addEventListener('click', () => {
+                this.animationEngine.playClickSound();
+                this.fetchServerStats();
+            });
+        }
+
         // 關閉工作表 Modal
         if (this.closeWorksheetModalBtn) {
             this.closeWorksheetModalBtn.addEventListener('click', () => {
@@ -726,6 +761,34 @@ class Game {
                 handleCloseClearModal();
             });
         }
+
+        // Google 試算表連動設定 Modal
+        if (this.sheetsConfigBtn) {
+            this.sheetsConfigBtn.addEventListener('click', () => {
+                this.animationEngine.playClickSound();
+                this.openSheetsModal();
+            });
+        }
+        if (this.closeSheetsModalBtn) {
+            this.closeSheetsModalBtn.addEventListener('click', () => {
+                this.closeSheetsModal();
+            });
+        }
+        if (this.sheetsModal) {
+            this.sheetsModal.addEventListener('click', (e) => {
+                if (e.target === this.sheetsModal) this.closeSheetsModal();
+            });
+        }
+        if (this.sheetsSaveBtn) {
+            this.sheetsSaveBtn.addEventListener('click', () => {
+                this.saveSheetsWebhookUrl();
+            });
+        }
+        if (this.sheetsTestBtn) {
+            this.sheetsTestBtn.addEventListener('click', () => {
+                this.testSheetsWebhook();
+            });
+        }
     }
 
     /**
@@ -774,6 +837,81 @@ class Game {
     }
 
     /**
+     * 取得目前使用者裝置類型 (手機 / 平板 / 電腦)
+     * @returns {'phone' | 'tablet' | 'desktop'}
+     */
+    getDeviceType() {
+        const ua = navigator.userAgent || '';
+        if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
+            return 'tablet';
+        }
+        if (/Mobile|iP(hone|od)|Android|BlackBerry|IEMobile|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/i.test(ua)) {
+            return 'phone';
+        }
+        if (window.innerWidth <= 768) {
+            return 'phone';
+        }
+        return 'desktop';
+    }
+
+    /**
+     * 跨手機/電腦即時向全球雲端資料庫與後端登記一次遊玩人次
+     */
+    async recordGamePlay() {
+        const deviceType = this.getDeviceType();
+        const isPhone = deviceType === 'phone' || deviceType === 'tablet';
+        const deviceLabel = isPhone ? '📱 手機' : '💻 電腦';
+
+        // 1. 同步全球雲端資料庫 (支援 GitHub Pages 與任何連網手機/電腦)
+        try {
+            const getRes = await fetch(`${CLOUD_DB_URL}?t=${Date.now()}`);
+            let data = { totalPlays: 0, phonePlays: 0, pcPlays: 0, redemptions: [] };
+            if (getRes.ok) {
+                data = await getRes.json();
+            }
+            data.totalPlays = (Number(data.totalPlays) || 0) + 1;
+            if (isPhone) {
+                data.phonePlays = (Number(data.phonePlays) || 0) + 1;
+            } else {
+                data.pcPlays = (Number(data.pcPlays) || 0) + 1;
+            }
+            if (!Array.isArray(data.redemptions)) data.redemptions = [];
+
+            await fetch(CLOUD_DB_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            this.cachedStats.totalPlays = data.totalPlays;
+            this.cachedStats.phonePlays = data.phonePlays;
+            this.cachedStats.pcPlays = data.pcPlays;
+            localStorage.setItem('tax_game_data_cache', JSON.stringify(this.cachedStats));
+        } catch (err) {
+            console.warn('雲端更新遊玩人次連線中，累計至本機快取:', err);
+            this.cachedStats.totalPlays = (this.cachedStats.totalPlays || 0) + 1;
+            if (isPhone) this.cachedStats.phonePlays = (this.cachedStats.phonePlays || 0) + 1;
+            else this.cachedStats.pcPlays = (this.cachedStats.pcPlays || 0) + 1;
+        }
+
+        // 2. 背景觸發 Google 試算表連動 Webhook (若已設定)
+        this.sendToSheetsWebhook({
+            action: 'play',
+            deviceType: deviceLabel,
+            time: new Date().toLocaleString('zh-TW', { hour12: false })
+        });
+
+        // 3. 背景嘗試本地 Express 伺服器 (若有)
+        try {
+            fetch('/api/play', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ deviceType })
+            }).catch(() => {});
+        } catch (e) {}
+    }
+
+    /**
      * 開始進入答題階段
      */
     startQuiz() {
@@ -781,6 +919,8 @@ class Game {
         this.scoreEngine.reset();
         this.showScreen('quiz');
         this.renderCurrentQuestion();
+        // 跨裝置記錄此手機或電腦的遊玩人次
+        this.recordGamePlay();
     }
 
     /**
@@ -950,26 +1090,69 @@ class Game {
     }
 
     /**
-     * 取得宣導品發放紀錄工作表陣列
-     * @returns {Array<{id: number, time: string, timestamp: number, code: string, status: string}>}
+     * 向雲端即時資料庫或伺服器讀取跨裝置最新遊戲人數與宣導品發放紀錄
      */
-    getRedemptionLogs() {
-        const stored = localStorage.getItem('tax_game_redemption_logs');
-        if (!stored) return [];
+    async fetchServerStats() {
         try {
-            return JSON.parse(stored) || [];
-        } catch (e) {
-            return [];
+            // 優先連線全球跨裝置雲端資料庫 (支援 GitHub Pages 靜態網站與跨手機/電腦即時同步)
+            const cloudRes = await fetch(`${CLOUD_DB_URL}?t=${Date.now()}`);
+            if (cloudRes.ok) {
+                const data = await cloudRes.json();
+                if (data && typeof data === 'object') {
+                    this.cachedStats = {
+                        totalPlays: Number(data.totalPlays) || 0,
+                        phonePlays: Number(data.phonePlays) || 0,
+                        pcPlays: Number(data.pcPlays) || 0,
+                        totalRedemptions: Array.isArray(data.redemptions) ? data.redemptions.length : (Number(data.totalRedemptions) || 0),
+                        redemptions: Array.isArray(data.redemptions) ? data.redemptions : []
+                    };
+                    localStorage.setItem('tax_game_data_cache', JSON.stringify(this.cachedStats));
+                    this.renderWorksheet();
+                    return;
+                }
+            }
+        } catch (err) {
+            console.warn('雲端資料庫連線中，嘗試備援方案:', err);
         }
+
+        // 備援方案 1: 本地 Express 伺服器 (若在 Node / Docker 環境中)
+        try {
+            const localRes = await fetch('/api/stats');
+            if (localRes.ok) {
+                const data = await localRes.json();
+                if (data.success) {
+                    this.cachedStats = {
+                        totalPlays: typeof data.totalPlays === 'number' ? data.totalPlays : 0,
+                        phonePlays: typeof data.phonePlays === 'number' ? data.phonePlays : 0,
+                        pcPlays: typeof data.pcPlays === 'number' ? data.pcPlays : 0,
+                        totalRedemptions: typeof data.totalRedemptions === 'number' ? data.totalRedemptions : (data.redemptions ? data.redemptions.length : 0),
+                        redemptions: Array.isArray(data.redemptions) ? data.redemptions : []
+                    };
+                    this.renderWorksheet();
+                    return;
+                }
+            }
+        } catch (e) {}
+
+        // 備援方案 2: 本機暫存
+        const localCache = localStorage.getItem('tax_game_data_cache');
+        if (localCache) {
+            try {
+                this.cachedStats = JSON.parse(localCache);
+            } catch (e) {}
+        }
+        this.renderWorksheet();
     }
 
     /**
-     * 新增一筆發放紀錄至後台工作表
+     * 新增一筆發放紀錄至全球雲端資料庫、Google 試算表與本地快取
      * @param {string} code 
-     * @returns {Array} 最新紀錄陣列
      */
-    addRedemptionLog(code = '7777') {
-        const logs = this.getRedemptionLogs();
+    async addRedemptionLog(code = '7777') {
+        const deviceType = this.getDeviceType();
+        const isPhone = deviceType === 'phone' || deviceType === 'tablet';
+        const deviceLabel = isPhone ? '📱 手機' : '💻 電腦';
+
         const now = new Date();
         const year = now.getFullYear();
         const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -979,29 +1162,213 @@ class Game {
         const seconds = String(now.getSeconds()).padStart(2, '0');
         const timeStr = `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
 
-        const newLog = {
-            id: logs.length + 1,
+        // 1. 寫入全球雲端資料庫
+        try {
+            const getRes = await fetch(`${CLOUD_DB_URL}?t=${Date.now()}`);
+            let data = { totalPlays: 0, phonePlays: 0, pcPlays: 0, redemptions: [] };
+            if (getRes.ok) {
+                data = await getRes.json();
+            }
+            if (!Array.isArray(data.redemptions)) data.redemptions = [];
+
+            const newEntry = {
+                id: data.redemptions.length + 1,
+                time: timeStr,
+                timestamp: Date.now(),
+                code: code,
+                status: '已兌換核銷',
+                deviceType: deviceLabel
+            };
+
+            data.redemptions.push(newEntry);
+            data.totalRedemptions = data.redemptions.length;
+
+            await fetch(CLOUD_DB_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            this.cachedStats = {
+                totalPlays: Number(data.totalPlays) || 0,
+                phonePlays: Number(data.phonePlays) || 0,
+                pcPlays: Number(data.pcPlays) || 0,
+                totalRedemptions: data.redemptions.length,
+                redemptions: data.redemptions
+            };
+            localStorage.setItem('tax_game_data_cache', JSON.stringify(this.cachedStats));
+            this.renderWorksheet();
+        } catch (err) {
+            console.warn('寫入雲端紀錄異常，存入本機快取:', err);
+            const newEntry = {
+                id: (this.cachedStats.redemptions.length || 0) + 1,
+                time: timeStr,
+                timestamp: Date.now(),
+                code: code,
+                status: '已兌換核銷',
+                deviceType: deviceLabel
+            };
+            this.cachedStats.redemptions.push(newEntry);
+            this.cachedStats.totalRedemptions = this.cachedStats.redemptions.length;
+            this.renderWorksheet();
+        }
+
+        // 2. 即時連動 Google 試算表 Webhook (若有設定)
+        this.sendToSheetsWebhook({
+            action: 'redeem',
             time: timeStr,
-            timestamp: Date.now(),
+            deviceType: deviceLabel,
             code: code,
             status: '已兌換核銷'
-        };
+        });
 
-        logs.push(newLog);
-        localStorage.setItem('tax_game_redemption_logs', JSON.stringify(logs));
-        return logs;
+        // 3. 背景通知本地 Express 伺服器 (若有)
+        try {
+            fetch('/api/redeem', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code, deviceType })
+            }).catch(() => {});
+        } catch (e) {}
     }
 
     /**
-     * 渲染後台發放紀錄工作表表格
+     * 發送數據至工作人員自訂的 Google 試算表 Webhook
+     */
+    async sendToSheetsWebhook(payload) {
+        const webhookUrl = localStorage.getItem('tax_game_sheets_webhook_url');
+        if (!webhookUrl || !webhookUrl.startsWith('http')) return;
+
+        try {
+            await fetch(webhookUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+        } catch (e) {
+            console.warn('Google 試算表連動發送失敗:', e);
+        }
+    }
+
+    /**
+     * 開啟 Google 試算表設定視窗
+     */
+    openSheetsModal() {
+        const currentUrl = localStorage.getItem('tax_game_sheets_webhook_url') || '';
+        if (this.sheetsWebhookUrlInput) this.sheetsWebhookUrlInput.value = currentUrl;
+        if (this.sheetsStatusMsg) {
+            this.sheetsStatusMsg.className = 'hidden';
+            this.sheetsStatusMsg.textContent = '';
+        }
+        if (this.sheetsModal) this.sheetsModal.classList.remove('hidden');
+    }
+
+    closeSheetsModal() {
+        if (this.sheetsModal) this.sheetsModal.classList.add('hidden');
+    }
+
+    saveSheetsWebhookUrl() {
+        this.animationEngine.playClickSound();
+        const url = this.sheetsWebhookUrlInput ? this.sheetsWebhookUrlInput.value.trim() : '';
+        if (url) {
+            localStorage.setItem('tax_game_sheets_webhook_url', url);
+            if (this.sheetsStatusMsg) {
+                this.sheetsStatusMsg.className = '';
+                this.sheetsStatusMsg.style.background = '#dcfce7';
+                this.sheetsStatusMsg.style.color = '#166534';
+                this.sheetsStatusMsg.textContent = '✓ Google 試算表網址儲存成功！每次遊玩與核銷將即時發送至該試算表。';
+            }
+        } else {
+            localStorage.removeItem('tax_game_sheets_webhook_url');
+            if (this.sheetsStatusMsg) {
+                this.sheetsStatusMsg.className = '';
+                this.sheetsStatusMsg.style.background = '#f1f5f9';
+                this.sheetsStatusMsg.style.color = '#475569';
+                this.sheetsStatusMsg.textContent = '已清除 Google 試算表網址，維持預設雲端資料庫同步。';
+            }
+        }
+        setTimeout(() => this.closeSheetsModal(), 1500);
+    }
+
+    async testSheetsWebhook() {
+        this.animationEngine.playClickSound();
+        const url = this.sheetsWebhookUrlInput ? this.sheetsWebhookUrlInput.value.trim() : '';
+        if (!url || !url.startsWith('http')) {
+            if (this.sheetsStatusMsg) {
+                this.sheetsStatusMsg.className = '';
+                this.sheetsStatusMsg.style.background = '#fee2e2';
+                this.sheetsStatusMsg.style.color = '#991b1b';
+                this.sheetsStatusMsg.textContent = '請先填寫正確的 Google Apps Script 網址 (https://script.google.com/...)';
+            }
+            return;
+        }
+
+        if (this.sheetsStatusMsg) {
+            this.sheetsStatusMsg.className = '';
+            this.sheetsStatusMsg.style.background = '#e0f2fe';
+            this.sheetsStatusMsg.style.color = '#075985';
+            this.sheetsStatusMsg.textContent = '正在發送測試封包至 Google Apps Script...';
+        }
+
+        try {
+            await fetch(url, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'test', time: new Date().toLocaleString(), msg: '中秋租稅遊戲連線測試' })
+            });
+            if (this.sheetsStatusMsg) {
+                this.sheetsStatusMsg.style.background = '#dcfce7';
+                this.sheetsStatusMsg.style.color = '#166534';
+                this.sheetsStatusMsg.textContent = '✓ 測試封包已順利送出！請確認您的 Google 試算表是否有接收到連線測試列。';
+            }
+        } catch (e) {
+            if (this.sheetsStatusMsg) {
+                this.sheetsStatusMsg.style.background = '#fee2e2';
+                this.sheetsStatusMsg.style.color = '#991b1b';
+                this.sheetsStatusMsg.textContent = '連線測試異常，請檢查網址權限是否設為「任何人 (Anyone)」皆可存取。';
+            }
+        }
+    }
+
+    /**
+     * 取得本機離線備份紀錄
+     */
+    getLocalRedemptionLogs() {
+        const stored = localStorage.getItem('tax_game_data_cache');
+        if (!stored) return [];
+        try {
+            const parsed = JSON.parse(stored);
+            return parsed.redemptions || [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    /**
+     * 渲染後台發放紀錄工作表表格與跨裝置統計摘要
      */
     renderWorksheet() {
-        const logs = this.getRedemptionLogs();
-        if (this.worksheetTotalCount) {
-            this.worksheetTotalCount.textContent = logs.length;
+        // 更新累計人次與裝置分佈
+        if (this.worksheetTotalPlays) {
+            this.worksheetTotalPlays.textContent = this.cachedStats.totalPlays || 0;
+        }
+        if (this.worksheetTotalRedemptions) {
+            this.worksheetTotalRedemptions.textContent = this.cachedStats.totalRedemptions || (this.cachedStats.redemptions ? this.cachedStats.redemptions.length : 0);
+        }
+        if (this.worksheetPhonePlays) {
+            this.worksheetPhonePlays.textContent = this.cachedStats.phonePlays || 0;
+        }
+        if (this.worksheetPcPlays) {
+            this.worksheetPcPlays.textContent = this.cachedStats.pcPlays || 0;
         }
 
         if (!this.worksheetTbody) return;
+
+        const logs = this.cachedStats.redemptions && this.cachedStats.redemptions.length > 0
+            ? this.cachedStats.redemptions
+            : this.getLocalRedemptionLogs();
 
         if (logs.length === 0) {
             this.worksheetTbody.innerHTML = '';
@@ -1010,10 +1377,20 @@ class Game {
             if (this.worksheetEmptyMsg) this.worksheetEmptyMsg.classList.add('hidden');
             // 將最新發放呈現於最上方
             const rowsHtml = logs.slice().reverse().map((log) => {
+                const isPhone = log.deviceType === '手機' || log.deviceType === 'phone' || log.deviceType === '📱 手機' || log.deviceType === '平板' || log.deviceType === 'tablet';
+                const deviceLabel = log.deviceType && log.deviceType.includes('手機')
+                    ? '📱 手機'
+                    : log.deviceType && log.deviceType.includes('平板')
+                    ? '📱 平板'
+                    : log.deviceType === 'phone'
+                    ? '📱 手機'
+                    : '💻 電腦';
+
                 return `
                     <tr>
                         <td>#${log.id}</td>
                         <td>${log.time}</td>
+                        <td><span class="device-tag ${isPhone ? 'device-phone' : ''}">${deviceLabel}</span></td>
                         <td><code style="background:#f1f5f9; padding:2px 6px; border-radius:4px; font-weight:700;">${log.code}</code></td>
                         <td><span style="color:#16a34a; font-weight:700;">✓ ${log.status || '已核銷'}</span></td>
                     </tr>
@@ -1023,39 +1400,59 @@ class Game {
         }
     }
 
+    /**
+     * 開啟工作表 Modal 並啟動即時輪詢以同步多台手機/電腦
+     */
     openWorksheetModal() {
-        this.renderWorksheet();
+        this.fetchServerStats();
         if (this.worksheetModal) {
             this.worksheetModal.classList.remove('hidden');
         }
+
+        // 開啟時每 3 秒自動向雲端輪詢最新數據
+        if (this.pollInterval) clearInterval(this.pollInterval);
+        this.pollInterval = setInterval(() => {
+            this.fetchServerStats();
+        }, 3000);
     }
 
+    /**
+     * 關閉工作表 Modal 並停止輪詢
+     */
     closeWorksheetModal() {
+        if (this.pollInterval) {
+            clearInterval(this.pollInterval);
+            this.pollInterval = null;
+        }
         if (this.worksheetModal) {
             this.worksheetModal.classList.add('hidden');
         }
     }
 
     /**
-     * 匯出 Excel / CSV 工作表檔案
+     * 匯出 Excel / CSV 工作表檔案 (包含跨裝置來源)
      */
     exportWorksheetCSV() {
-        const logs = this.getRedemptionLogs();
+        const logs = this.cachedStats.redemptions && this.cachedStats.redemptions.length > 0
+            ? this.cachedStats.redemptions
+            : this.getLocalRedemptionLogs();
+
         if (logs.length === 0) {
-            alert('目前工作表中尚無發放紀錄可供匯出！');
+            alert('目前尚無發放紀錄可供匯出！');
             return;
         }
 
-        // 加入 UTF-8 BOM，確保 Excel / 試算表軟體直接雙擊開啟不會出現中文亂碼
+        // 加入 UTF-8 BOM，確保 Excel 雙擊開啟不亂碼
         let csvContent = '\uFEFF';
-        csvContent += '序號,發放時間,驗證兌換碼,核銷狀態\r\n';
+        csvContent += '序號,發放時間,來源裝置,驗證兌換碼,核銷狀態\r\n';
 
         logs.forEach(log => {
             const idStr = log.id;
             const timeStr = (log.time || '').replace(/,/g, ' ');
+            const deviceStr = (log.deviceType || '電腦').replace(/,/g, ' ');
             const codeStr = (log.code || '7777').replace(/,/g, ' ');
             const statusStr = (log.status || '已核銷').replace(/,/g, ' ');
-            csvContent += `${idStr},${timeStr},${codeStr},${statusStr}\r\n`;
+            csvContent += `${idStr},${timeStr},${deviceStr},${codeStr},${statusStr}\r\n`;
         });
 
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
@@ -1068,7 +1465,7 @@ class Game {
         const dateStr = `${year}${month}${day}`;
 
         link.href = url;
-        link.download = `宣導品發放紀錄工作表_${dateStr}.csv`;
+        link.download = `跨裝置宣導品發放紀錄工作表_${dateStr}.csv`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -1076,10 +1473,40 @@ class Game {
     }
 
     /**
-     * 清空工作表紀錄
+     * 清空工作表紀錄 (需密碼保護，清空全球雲端與本機)
      */
-    clearWorksheetLogs() {
+    async clearWorksheetLogs() {
+        const emptyData = {
+            totalPlays: 0,
+            phonePlays: 0,
+            pcPlays: 0,
+            redemptions: []
+        };
+
+        // 1. 清空全球雲端資料庫
+        try {
+            await fetch(CLOUD_DB_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(emptyData)
+            });
+        } catch (err) {
+            console.warn('雲端清空失敗:', err);
+        }
+
+        // 2. 清空本地 Express 伺服器 (若有)
+        try {
+            await fetch('/api/clear', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: '1234' })
+            });
+        } catch (e) {}
+
+        // 3. 清空本機快取
+        localStorage.removeItem('tax_game_data_cache');
         localStorage.removeItem('tax_game_redemption_logs');
+        this.cachedStats = emptyData;
         this.renderWorksheet();
     }
 
@@ -1089,7 +1516,7 @@ class Game {
     handleVerifySuccess() {
         this.animationEngine.playSuccessSound();
 
-        // 取得輸入的兌換碼並自動在後台工作表新增發放紀錄與時間
+        // 取得輸入的兌換碼並即時在中央雲端與工作表新增發放紀錄
         const code = this.codeVerifier ? this.codeVerifier.getCode() : '7777';
         this.addRedemptionLog(code);
 
