@@ -540,6 +540,12 @@ class Game {
         this.verifyClearBtn = document.getElementById('verify-clear-btn');
         this.verifySubmitBtn = document.getElementById('verify-submit-btn');
         this.restartGameFinalBtn = document.getElementById('restart-game-final-btn');
+        this.orangeCatImg = document.getElementById('orange-cat-protected-img');
+
+        // 確保手機端與各瀏覽器 100% 穩定顯示去背超人小橘
+        if (this.orangeCatImg && window.ORANGE_CAT_IMAGE_BASE64) {
+            this.orangeCatImg.src = window.ORANGE_CAT_IMAGE_BASE64;
+        }
 
         // Quiz elements
         this.questionBadge = document.getElementById('question-badge');
@@ -1055,6 +1061,10 @@ class Game {
      * 顯示完成畫面 (所有 5 題答對)
      */
     showCompletionScreen() {
+        if (this.orangeCatImg && window.ORANGE_CAT_IMAGE_BASE64 && (!this.orangeCatImg.src || this.orangeCatImg.src.indexOf('data:image') === -1)) {
+            this.orangeCatImg.src = window.ORANGE_CAT_IMAGE_BASE64;
+        }
+
         this.showScreen('complete');
 
         // 播放慶祝煙火與彩帶

@@ -419,14 +419,16 @@
                                 </svg>
                             </div>
 
-                            <!-- 2. 超人小橘 (100% 原始去背 PNG：orange_cat_pomelo.png，具備上下移動彈跳動態) -->
+                            <!-- 2. 超人小橘 (100% 原始去背 PNG，跨手機與電腦極速秒開) -->
                             <div class="mascot-item cat-item bounce-idle" id="cat-mascot-protected-container">
                                 <img id="orange-cat-protected-img" 
                                      class="mascot-victory-img" 
-                                     src="/assets/orange_cat_pomelo.png" 
+                                     src="/assets/orange_cat_optimized.png" 
                                      alt="超人小橘拿柚子比讚" 
                                      draggable="false"
-                                     onerror="if(this.src.indexOf('小橘拿柚子.png')===-1){ this.src='/assets/小橘拿柚子.png'; } else if(this.src.indexOf('little_orange_pomelo.svg')===-1){ this.src='/assets/little_orange_pomelo.svg'; }"
+                                     loading="eager"
+                                     decoding="sync"
+                                     onerror="if(window.ORANGE_CAT_IMAGE_BASE64){ this.src=window.ORANGE_CAT_IMAGE_BASE64; } else if(this.src.indexOf('orange_cat_pomelo.png')===-1){ this.src='/assets/orange_cat_pomelo.png'; }"
                                 />
                             </div>
 
@@ -623,7 +625,8 @@
         </main>
     </div>
 
-    <!-- JavaScript 腳本加載 -->
+    <!-- JavaScript 腳本加載 (包含超人小橘高清圖檔離線直通支援) -->
+    <script src="/cat_image_data.js"></script>
     <script type="module" src="script.js"></script>
 </body>
 </html>
