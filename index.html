@@ -328,7 +328,8 @@
                         </div>
 
                         <div class="verify-actions">
-                            <button id="verify-submit-btn" class="btn btn-primary btn-large">確認</button>
+                            <button id="verify-clear-btn" class="btn btn-secondary btn-large" type="button">清除</button>
+                            <button id="verify-submit-btn" class="btn btn-primary btn-large" type="button">確認</button>
                         </div>
 
                         <div class="worksheet-entrance-wrapper">
@@ -382,23 +383,6 @@
                     <div class="pwd-modal-footer">
                         <button id="pwd-clear-btn" class="btn btn-secondary btn-sm">清除</button>
                         <button id="pwd-submit-btn" class="btn btn-primary btn-sm">確認輸入</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 清除紀錄確認 Modal -->
-            <div id="clear-confirm-modal" class="modal-backdrop hidden">
-                <div class="pwd-modal-card">
-                    <div class="worksheet-header" style="background: linear-gradient(135deg, #991b1b 0%, #dc2626 100%);">
-                        <h3>⚠️ 確定清空紀錄？</h3>
-                        <button id="close-clear-confirm-btn" class="modal-close-btn" aria-label="關閉">&times;</button>
-                    </div>
-                    <div class="pwd-modal-body">
-                        <p class="pwd-instruction" style="color: #991b1b; font-weight: 700;">此動作將永久刪除所有宣導品發放紀錄與時間，無法復原！</p>
-                    </div>
-                    <div class="pwd-modal-footer">
-                        <button id="clear-cancel-btn" class="btn btn-secondary btn-sm">取消</button>
-                        <button id="clear-submit-btn" class="btn btn-danger btn-sm">確定清空</button>
                     </div>
                 </div>
             </div>
@@ -461,6 +445,23 @@
                                 🗑️ 清除所有紀錄
                             </button>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 清除紀錄確認 Modal (置於最上層正面) -->
+            <div id="clear-confirm-modal" class="modal-backdrop hidden modal-high-priority">
+                <div class="pwd-modal-card">
+                    <div class="worksheet-header" style="background: linear-gradient(135deg, #991b1b 0%, #dc2626 100%);">
+                        <h3>⚠️ 確定清空紀錄？</h3>
+                        <button id="close-clear-confirm-btn" class="modal-close-btn" aria-label="關閉">&times;</button>
+                    </div>
+                    <div class="pwd-modal-body">
+                        <p class="pwd-instruction" style="color: #991b1b; font-weight: 700;">此動作將永久刪除所有宣導品發放紀錄與時間，無法復原！</p>
+                    </div>
+                    <div class="pwd-modal-footer">
+                        <button id="clear-cancel-btn" class="btn btn-secondary btn-sm">取消</button>
+                        <button id="clear-submit-btn" class="btn btn-danger btn-sm">確定清空</button>
                     </div>
                 </div>
             </div>

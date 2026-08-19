@@ -537,6 +537,7 @@ class Game {
         this.soundBtn = document.getElementById('sound-btn');
         this.restartHeaderBtn = document.getElementById('restart-header-btn');
         this.nextToVerifyBtn = document.getElementById('next-to-verify-btn');
+        this.verifyClearBtn = document.getElementById('verify-clear-btn');
         this.verifySubmitBtn = document.getElementById('verify-submit-btn');
         this.restartGameFinalBtn = document.getElementById('restart-game-final-btn');
 
@@ -645,6 +646,19 @@ class Game {
             this.verifySubmitBtn.addEventListener('click', () => {
                 this.animationEngine.playClickSound();
                 this.codeVerifier.submit();
+            });
+        }
+
+        // 驗證頁面清除按鈕 (清空 4 位數輸入框並重新聚焦第 1 格)
+        if (this.verifyClearBtn) {
+            this.verifyClearBtn.addEventListener('click', () => {
+                this.animationEngine.playClickSound();
+                if (this.codeVerifier) {
+                    this.codeVerifier.reset();
+                }
+                if (this.verifyErrorMsg) {
+                    this.verifyErrorMsg.classList.add('hidden');
+                }
             });
         }
 

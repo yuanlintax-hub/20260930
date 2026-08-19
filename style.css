@@ -52,25 +52,28 @@
 
 html, body {
     width: 100%;
-    height: 100%;
-    overflow: hidden;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    overflow-y: auto;
     font-family: var(--font-main);
     background-color: var(--color-sky-top);
     color: var(--color-text-dark);
 }
 
-/* 遊戲整體 1920x1080 基準縮放容器 */
+/* 遊戲整體容器 (適配所有螢幕與手機，不被裁切) */
 .game-wrapper {
     position: relative;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
     max-width: 1920px;
-    max-height: 1080px;
     margin: 0 auto;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
 }
 
 /* --- 2. 背景與氛圍元素 (星空/月亮/白雲/燈籠/草地) --- */
@@ -455,28 +458,32 @@ html, body {
 .game-viewport {
     position: relative;
     z-index: 10;
-    flex: 1;
+    flex: 1 1 auto;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px;
+    padding: 16px 20px 24px;
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
 }
 
-/* 所有畫面切換淡入淡出 */
+/* 所有畫面切換淡入淡出 (動態適配高度防切割) */
 .screen {
-    position: absolute;
     width: 100%;
     max-width: 860px;
-    display: flex;
+    display: none;
     justify-content: center;
     align-items: center;
     opacity: 0;
     pointer-events: none;
-    transform: translateY(20px) scale(0.98);
-    transition: opacity 0.4s ease, transform 0.4s ease;
+    transform: translateY(12px) scale(0.98);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    margin: auto 0;
 }
 
 .screen.active {
+    display: flex;
     opacity: 1;
     pointer-events: auto;
     transform: translateY(0) scale(1);
@@ -489,7 +496,7 @@ html, body {
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-radius: var(--radius-lg);
-    padding: 40px;
+    padding: 36px 32px;
     box-shadow: var(--shadow-card);
     text-align: center;
     position: relative;
@@ -941,7 +948,16 @@ html, body {
 }
 
 .verify-actions {
-    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+}
+
+.verify-actions .btn {
+    min-width: 120px;
 }
 
 /* 驗證成功呈現狀態 */
@@ -1063,15 +1079,20 @@ html, body {
     position: fixed;
     top: 0;
     left: 0;
+    right: 0;
+    bottom: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(15, 23, 42, 0.75);
+    height: 100dvh;
+    background: rgba(15, 23, 42, 0.8);
     backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     z-index: 9999;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 16px;
+    margin: 0;
     opacity: 1;
     transition: opacity 0.3s ease;
 }
@@ -1080,6 +1101,20 @@ html, body {
     display: none !important;
     opacity: 0;
     pointer-events: none;
+}
+
+/* 確保清除確認提示框浮動在頁面最正面中央 */
+.modal-backdrop.modal-high-priority,
+#clear-confirm-modal {
+    z-index: 10050 !important;
+}
+
+#pwd-modal {
+    z-index: 10010 !important;
+}
+
+#sheets-modal {
+    z-index: 10020 !important;
 }
 
 .worksheet-modal-card {
@@ -1421,33 +1456,56 @@ html, body {
     border-top: 1px solid #e2e8f0;
     display: flex;
     justify-content: flex-end;
+    align-items: center;
     gap: 12px;
 }
 
-/* --- 9. 響應式 RWD 裝置適配 (Tablet & Mobile) --- */
+/* Modal 內部的次要按鈕（如清除、取消按鈕）樣式修正，確保在白色背景下文字與按鈕清晰可見 */
+.pwd-modal-card .btn-secondary,
+.modal-card .btn-secondary,
+.worksheet-modal-card .btn-secondary,
+.pwd-modal-footer .btn-secondary {
+    background: #e2e8f0 !important;
+    color: #334155 !important;
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+    font-weight: 700;
+}
+
+.pwd-modal-card .btn-secondary:hover,
+.modal-card .btn-secondary:hover,
+.worksheet-modal-card .btn-secondary:hover,
+.pwd-modal-footer .btn-secondary:hover {
+    background: #cbd5e1 !important;
+    color: #0f172a !important;
+}
+
+/* --- 9. 響應式 RWD 裝置適配 (Tablet & Mobile 完美防切割適配) --- */
 @media (max-width: 1024px) {
     .card {
-        padding: 30px;
+        padding: 28px 24px;
     }
     
     .main-title {
-        font-size: 32px;
+        font-size: 48px;
     }
     
     .question-text {
-        font-size: 22px;
+        font-size: 36px;
         min-height: auto;
     }
 }
 
 @media (max-width: 768px) {
     .game-header {
-        height: 70px;
-        padding: 0 16px;
+        height: auto;
+        min-height: 58px;
+        padding: 8px 14px;
+        gap: 8px;
     }
     
     .header-title {
-        font-size: 18px;
+        font-size: 16px;
     }
     
     .tracker-label {
@@ -1455,90 +1513,187 @@ html, body {
     }
     
     .slot-item {
-        width: 32px;
-        height: 32px;
-        font-size: 18px;
+        width: 28px;
+        height: 28px;
+        font-size: 16px;
     }
     
+    .header-controls {
+        gap: 8px;
+    }
+
+    .icon-btn {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+
+    .game-viewport {
+        padding: 12px 14px 20px;
+    }
+
     .card {
-        padding: 24px 20px;
+        padding: 22px 18px;
         border-radius: 20px;
     }
     
     .main-title {
-        font-size: 52px;
+        font-size: clamp(26px, 6.5vw, 42px);
     }
     
     .sub-title {
-        font-size: 18px;
+        font-size: clamp(14px, 3.8vw, 17px);
+        padding: 6px 16px;
+    }
+
+    .rabbit-svg {
+        width: 160px;
+        height: 160px;
     }
     
     .btn-large {
-        padding: 14px 32px;
-        font-size: 22px;
+        padding: 12px 28px;
+        font-size: 18px;
     }
     
     .question-text {
-        font-size: 38px;
+        font-size: clamp(20px, 5.2vw, 32px);
+        line-height: 1.35;
+        min-height: auto;
     }
     
     .option-btn {
-        padding: 16px 20px;
-        font-size: 32px;
+        padding: 12px 16px;
+        font-size: clamp(16px, 4.2vw, 22px);
+        gap: 12px;
+        border-radius: 14px;
     }
     
     .option-number {
-        width: 42px;
-        height: 42px;
-        font-size: 22px;
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
     }
     
     .digit-input {
-        width: 52px;
-        height: 62px;
+        width: 48px;
+        height: 58px;
+        font-size: 26px;
+    }
+    
+    .digit-inputs-group {
+        gap: 10px;
+    }
+
+    .lantern-group {
+        display: none;
+    }
+
+    .mountains {
+        height: 90px;
+    }
+
+    .grassland {
+        height: 45px;
+    }
+
+    .complete-title {
+        font-size: 32px;
+    }
+
+    .complete-subtitle {
+        font-size: 22px;
+    }
+
+    .victory-mooncakes {
         font-size: 28px;
     }
-    
-    .lantern-group {
-        padding: 0 30px;
-    }
-    
-    .lantern-body {
-        width: 45px;
-        height: 55px;
-        font-size: 18px;
+
+    .victory-rabbit-emoji {
+        font-size: 60px;
     }
 }
 
 @media (max-width: 480px) {
+    .game-header {
+        padding: 6px 10px;
+    }
+
     .header-brand .header-title {
-        display: none; /* 手機窄版隱藏重複標題 */
+        display: none; /* 手機極窄版隱藏重複標題 */
+    }
+
+    .game-viewport {
+        padding: 8px 10px 16px;
+    }
+
+    .card {
+        padding: 18px 14px;
+        border-radius: 16px;
     }
     
     .main-title {
-        font-size: 40px;
+        font-size: clamp(22px, 6vw, 32px);
+        line-height: 1.25;
+    }
+
+    .rabbit-svg {
+        width: 130px;
+        height: 130px;
     }
     
     .question-text {
-        font-size: 28px;
+        font-size: 19px;
+        line-height: 1.35;
     }
 
     .option-btn {
-        font-size: 24px;
-        padding: 12px 16px;
+        font-size: 16px;
+        padding: 10px 12px;
+        gap: 10px;
+    }
+
+    .option-number {
+        width: 30px;
+        height: 30px;
+        font-size: 15px;
     }
     
     .complete-title {
-        font-size: 32px;
+        font-size: 28px;
     }
-    
+
+    .complete-subtitle {
+        font-size: 20px;
+    }
+
     .digit-inputs-group {
-        gap: 8px;
+        gap: 6px;
     }
     
     .digit-input {
-        width: 44px;
-        height: 54px;
-        font-size: 24px;
+        width: 40px;
+        height: 48px;
+        font-size: 22px;
+    }
+
+    .verify-title {
+        font-size: 22px;
+    }
+
+    .worksheet-header h3 {
+        font-size: 15px;
+    }
+
+    .summary-item {
+        font-size: 13px;
+    }
+
+    .worksheet-footer {
+        padding: 10px 14px;
+    }
+
+    .footer-btn-group {
+        width: 100%;
+        justify-content: flex-end;
     }
 }
